@@ -165,12 +165,9 @@
             const SUPABASE_URL = 'https://zflmxkrejibisruiptzv.supabase.co'; 
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmbG14a3JlamliaXNydWlwdHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MDQ5ODYsImV4cCI6MjA3NDk4MDk4Nn0.Oz582z5VfIZF2ljJWUN7HURVXr7b24LW__mU0hw6fyo';
             
-            let supabase;
-            if (SUPABASE_URL !== 'https://zflmxkrejibisruiptzv.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmbG14a3JlamliaXNydWlwdHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MDQ5ODYsImV4cCI6MjA3NDk4MDk4Nn0.Oz582z5VfIZF2ljJWUN7HURVXr7b24LW__mU0hw6fyo') {
-                supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } else {
-                console.warn("As credenciais do Supabase não foram definidas. O app não salvará os dados permanentemente.");
-            }
+            // Corrigido: Inicializa o cliente Supabase de forma direta e segura.
+            // O objeto 'supabase' global é fornecido pela tag de script no <head>.
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             let events = [];
             let isAdminMode = false;
@@ -462,4 +459,5 @@
     </script>
 </body>
 </html>
+
 
