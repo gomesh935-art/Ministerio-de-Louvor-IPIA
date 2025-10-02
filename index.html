@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ministério de Louvor - IPI Aerolândia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+  <div id="app" class="container mx-auto p-4 md:p-8 max-w-4xl">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold text-white">Ministério de Louvor</h1>
+      <p class="text-lg text-gray-400">IPI de Aerolândia</p>
+    </header>
+
+    <!-- Controles -->
+    <div class="flex justify-between items-center mb-6 p-4 bg-gray-800 rounded-lg shadow-md">
+      <span class="text-white">Gerenciar Escala</span>
+      <button id="addEventBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">
+        + Adicionar Evento
+      </button>
+    </div>
+
+    <!-- Lista de eventos -->
+    <main id="events-container" class="space-y-6"></main>
+  </div>
+
+  <script type="module">
+    import { getEventos, criarEvento, atualizarEvento, deletarEvento } from "./events.js";
+
+    const container = document.getElementById("events-container");
+    const addEventBtn = document.getElementById("addEventBtn");
+
+    async function render() {
+      container.innerHTML = "<p class='text-gray-400'>Carregando...</p>";
+      const eventos = await getEventos();
+      if (!eventos.length) {
+        container.innerHTML = "<p class='text-gray-400'>Nenhum evento encontrado.</p>";
+        return;
+      }
+      container.innerHTML = "";
+      eventos.forEach(ev => {
+        const div = document.createElement("div");
+        div.className = "bg-gray-800 p-6 rounded-lg shadow-lg";
+        div.innerHTML = `
+          <h2 class="text-2xl font-bold text-indigo-400">${ev.titulo}</h2>
+          <p class="text-gray-300">${new Date(ev.data_evento).toLocaleDateString("pt-BR")}</p>
+          <p class="text-gray-400">Local: ${ev.local}</p>
+          <p class="text-gray-400">Ensaio: ${new Date(ev.data_ensaio).toLocaleDateString("pt-BR")} às ${ev.hora_ensaio}</p>
+          <h3 class="mt-4 text-white">Repertório:</h3>
+          <ul class="list-disc list-inside text-gray-300">
+            ${ev.musicas.map(m => `<li>${m.titulo} - ${m.cantor ?? ""}</li>`).join("")}
+          </ul>
+          <div class="mt-4 flex gap-2">
+            <button data-id="${ev.id}" class="editar bg-yellow-600 px-3 py-1 rounded">Editar</button>
+            <button data-id="${ev.id}" class="deletar bg-red-600 px-3 py-1 rounded">Excluir</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      document.querySelectorAll(".deletar").forEach(btn =>
+        btn.addEventListener("click", async e => {
+          await deletarEvento(e.target.dataset.id);
+          render();
+        })
+      );
+    }
+
+    addEventBtn.addEventListener("click", async () => {
+      const novo = {
+        titulo: "Novo Evento",
+        local: "IPI",
+        data_evento: "2025-10-10",
+        data_ensaio: "2025-10-09",
+        hora_ensaio: "19:00",
+        spotify_link: null
+      };
+      await criarEvento(novo);
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
